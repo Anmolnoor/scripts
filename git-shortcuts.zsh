@@ -10,6 +10,7 @@
 _spinner_pid=""
 
 start_spinner() {
+  setopt LOCAL_OPTIONS NO_NOTIFY NO_MONITOR
   local msg="${1:-Loading}"
   (
     local chars="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -64,11 +65,11 @@ push() {
   stop_spinner
   if [[ $ret -eq 0 ]]; then
     echo "✅ Pushed to $branch"
-    # Show useful info if available (like new branch URL)
-    echo "$output" | grep -E "(new branch|->|https://)" | head -3
   else
     echo "❌ Push failed"
+    echo ""
     echo "$output"
+    echo ""
   fi
   return $ret
 }
@@ -87,11 +88,11 @@ pull() {
   stop_spinner
   if [[ $ret -eq 0 ]]; then
     echo "✅ Pulled from $branch"
-    # Show summary (files changed, etc.) but skip verbose lines
-    echo "$output" | grep -vE "^(From |   [a-f0-9])" | head -5
   else
     echo "❌ Pull failed"
+    echo ""
     echo "$output"
+    echo ""
   fi
   return $ret
 }
@@ -170,11 +171,11 @@ cws() {
   
   if [[ $ret -eq 0 ]]; then
     echo "✅ $summary"
-    # Show file stats
-    echo "$output" | grep -E "^\s*[0-9]+ file" | head -1
   else
     echo "❌ Commit failed"
+    echo ""
     echo "$output"
+    echo ""
   fi
   return $ret
 }
@@ -213,12 +214,13 @@ cwsp() {
   
   if [[ $ret -ne 0 ]]; then
     echo "❌ Commit failed"
+    echo ""
     echo "$output"
+    echo ""
     return 1
   fi
   
   echo "✅ $summary"
-  echo "$output" | grep -E "^\s*[0-9]+ file" | head -1
   
   local branch=$(git symbolic-ref --short HEAD 2>/dev/null)
   start_spinner "Pushing to $branch"
@@ -228,10 +230,11 @@ cwsp() {
   
   if [[ $ret -eq 0 ]]; then
     echo "✅ Pushed to $branch"
-    echo "$output" | grep -E "(new branch|->|https://)" | head -3
   else
     echo "❌ Push failed"
+    echo ""
     echo "$output"
+    echo ""
   fi
   return $ret
 }
