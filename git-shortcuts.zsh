@@ -10,23 +10,20 @@
 _spinner_pid=""
 
 start_spinner() {
-  setopt LOCAL_OPTIONS NO_NOTIFY NO_MONITOR
   local msg="${1:-Loading}"
   (
-    local chars="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
-    local i=0
     while true; do
-      printf "\r%s %s" "${chars:$i:1}" "$msg" >&2
-      i=$(( (i + 1) % 10 ))
-      sleep 0.1
+      for c in ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏; do
+        printf "\r%s %s" "$c" "$msg" >&2
+        sleep 0.1
+      done
     done
-  ) &
+  ) &!
   _spinner_pid=$!
-  disown $_spinner_pid 2>/dev/null || true
 }
 
 stop_spinner() {
-  [[ -n "$_spinner_pid" ]] && kill "$_spinner_pid" 2>/dev/null
+  [[ -n "$_spinner_pid" ]] && kill "$_spinner_pid" 2>/dev/null && wait "$_spinner_pid" 2>/dev/null
   _spinner_pid=""
   printf "\r\033[K" >&2
 }
