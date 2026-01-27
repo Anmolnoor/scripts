@@ -21,7 +21,7 @@ start_spinner() {
     done
   ) &
   _spinner_pid=$!
-  disown
+  disown $_spinner_pid 2>/dev/null || true
 }
 
 stop_spinner() {
@@ -58,10 +58,18 @@ push() {
     return 1
   fi
   start_spinner "Pushing to $branch"
-  git push origin "$branch" >/dev/null 2>&1
+  local output
+  output=$(git push origin "$branch" 2>&1)
   local ret=$?
   stop_spinner
-  [[ $ret -eq 0 ]] && echo "✅ Pushed to $branch" || echo "❌ Push failed"
+  if [[ $ret -eq 0 ]]; then
+    echo "✅ Pushed to $branch"
+    # Show useful info if available (like new branch URL)
+    echo "$output" | grep -E "(new branch|->|https://)" | head -3
+  else
+    echo "❌ Push failed"
+    echo "$output"
+  fi
   return $ret
 }
 
@@ -73,10 +81,18 @@ pull() {
     return 1
   fi
   start_spinner "Pulling from $branch"
-  git pull origin "$branch" >/dev/null 2>&1
+  local output
+  output=$(git pull origin "$branch" 2>&1)
   local ret=$?
   stop_spinner
-  [[ $ret -eq 0 ]] && echo "✅ Pulled from $branch" || echo "❌ Pull failed"
+  if [[ $ret -eq 0 ]]; then
+    echo "✅ Pulled from $branch"
+    # Show summary (files changed, etc.) but skip verbose lines
+    echo "$output" | grep -vE "^(From |   [a-f0-9])" | head -5
+  else
+    echo "❌ Pull failed"
+    echo "$output"
+  fi
   return $ret
 }
 
@@ -147,11 +163,19 @@ cws() {
   esac
   
   start_spinner "Committing"
-  git add . && git commit -m "$summary" >/dev/null 2>&1
+  local output
+  output=$(git add . && git commit -m "$summary" 2>&1)
   local ret=$?
   stop_spinner
   
-  [[ $ret -eq 0 ]] && echo "✅ $summary" || echo "❌ Commit failed"
+  if [[ $ret -eq 0 ]]; then
+    echo "✅ $summary"
+    # Show file stats
+    echo "$output" | grep -E "^\s*[0-9]+ file" | head -1
+  else
+    echo "❌ Commit failed"
+    echo "$output"
+  fi
   return $ret
 }
 
@@ -182,23 +206,32 @@ cwsp() {
   esac
   
   start_spinner "Committing"
-  git add . && git commit -m "$summary" >/dev/null 2>&1
+  local output
+  output=$(git add . && git commit -m "$summary" 2>&1)
   local ret=$?
   stop_spinner
   
   if [[ $ret -ne 0 ]]; then
     echo "❌ Commit failed"
+    echo "$output"
     return 1
   fi
   
   echo "✅ $summary"
+  echo "$output" | grep -E "^\s*[0-9]+ file" | head -1
   
   local branch=$(git symbolic-ref --short HEAD 2>/dev/null)
   start_spinner "Pushing to $branch"
-  git push origin "$branch" >/dev/null 2>&1
+  output=$(git push origin "$branch" 2>&1)
   ret=$?
   stop_spinner
   
-  [[ $ret -eq 0 ]] && echo "✅ Pushed to $branch" || echo "❌ Push failed"
+  if [[ $ret -eq 0 ]]; then
+    echo "✅ Pushed to $branch"
+    echo "$output" | grep -E "(new branch|->|https://)" | head -3
+  else
+    echo "❌ Push failed"
+    echo "$output"
+  fi
   return $ret
 }
