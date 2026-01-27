@@ -50,7 +50,7 @@ dropcommit
 | File | Purpose |
 |------|---------|
 | `git-shortcuts.zsh` | Git-related shortcuts |
-| `.gitignore` | Template gitignore (copy to your projects) |
+| `.gitignore` | Template gitignore |
 
 ---
 
