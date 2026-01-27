@@ -15,7 +15,7 @@ start_spinner() {
     local chars="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
     local i=0
     while true; do
-      printf "\r%s %s" "${chars:$i:1}" "$msg"
+      printf "\r%s %s" "${chars:$i:1}" "$msg" >&2
       i=$(( (i + 1) % 10 ))
       sleep 0.1
     done
@@ -27,7 +27,7 @@ start_spinner() {
 stop_spinner() {
   [[ -n "$_spinner_pid" ]] && kill "$_spinner_pid" 2>/dev/null
   _spinner_pid=""
-  printf "\r\033[K"
+  printf "\r\033[K" >&2
 }
 
 # ─────────────────────────────────────────────────────────────
