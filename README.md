@@ -16,6 +16,15 @@ Custom shell shortcuts to make life easier.
 | `uncommit` | Undo last commit, keep changes |
 | `dropcommit` | Undo last commit, delete changes |
 
+### AI-Powered Shortcuts
+
+| Command | Description |
+|---------|-------------|
+| `sum` | Generate AI commit summary for current changes |
+| `cws` | Commit with AI-generated summary (prompts for confirmation) |
+| `cwsp` | Commit with AI-generated summary and push |
+| `ghelp` | Show all available shortcuts |
+
 ---
 
 ## Usage Examples
@@ -41,6 +50,18 @@ uncommit
 
 # Nuke last commit completely
 dropcommit
+
+# Get an AI-generated commit message for your changes
+sum
+
+# Commit with AI summary (shows message, asks Y/n/e to confirm/cancel/edit)
+cws
+
+# Commit with AI summary and push in one command
+cwsp
+
+# Forgot a command? Show all shortcuts
+ghelp
 ```
 
 ---
@@ -50,6 +71,7 @@ dropcommit
 | File | Purpose |
 |------|---------|
 | `git-shortcuts.zsh` | Git-related shortcuts |
+| `help.zsh` | Help command to list all shortcuts |
 | `.gitignore` | Template gitignore |
 
 ---
@@ -60,6 +82,7 @@ All scripts are loaded via `~/.zshrc`:
 
 ```bash
 source ~/.scripts/git-shortcuts.zsh
+source ~/.scripts/help.zsh
 ```
 
 After editing any script, reload with:
