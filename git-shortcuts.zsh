@@ -99,6 +99,27 @@ drop() {
   git stash && git stash drop
 }
 
+# cnb - create new branch and switch to it
+cnb() {
+  if [ -z "$1" ]; then
+    echo "Usage: cnb \"branch-name\""
+    return 1
+  fi
+  local branch="$1"
+  local output
+  output=$(git checkout -b "$branch" 2>&1)
+  local ret=$?
+  if [[ $ret -eq 0 ]]; then
+    echo "✅ Created and switched to branch: $branch"
+  else
+    echo "❌ Failed to create branch"
+    echo ""
+    echo "$output"
+    echo ""
+  fi
+  return $ret
+}
+
 # sum - get AI-generated one-line commit summary using cursor agent
 sum() {
   local status_output=$(git status --porcelain 2>/dev/null)
