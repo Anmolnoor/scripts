@@ -144,6 +144,15 @@ show_removal_plan() {
   [[ -d "$HOME/powerlevel10k" ]] && echo "  • Powerlevel10k (~/powerlevel10k)"
   [[ -f "$HOME/.p10k.zsh" ]] && echo "  • Powerlevel10k config (~/.p10k.zsh)"
   [[ -d "$HOME/.scripts" ]] && echo "  • Scripts directory (~/.scripts)"
+  
+  # Check for fonts
+  local fonts_dir=""
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    fonts_dir="$HOME/Library/Fonts"
+  else
+    fonts_dir="$HOME/.local/share/fonts"
+  fi
+  [[ -f "$fonts_dir/MesloLGS NF Regular.ttf" ]] && echo "  • MesloLGS NF fonts"
 
   # Check plugins
   local plugins=("zsh-autosuggestions" "zsh-syntax-highlighting" "fast-syntax-highlighting" "zsh-autocomplete" "zsh-z")
@@ -279,6 +288,35 @@ remove_powerlevel10k() {
   fi
 }
 
+remove_fonts() {
+  print_section "Removing MesloLGS NF Fonts"
+
+  local fonts_dir=""
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    fonts_dir="$HOME/Library/Fonts"
+  else
+    fonts_dir="$HOME/.local/share/fonts"
+  fi
+
+  local fonts_removed=0
+  for font in "$fonts_dir"/MesloLGS\ NF*.ttf; do
+    if [[ -f "$font" ]]; then
+      rm -f "$font"
+      ((fonts_removed++))
+    fi
+  done
+
+  if [[ $fonts_removed -gt 0 ]]; then
+    # Refresh font cache on Linux
+    if [[ "$OSTYPE" != "darwin"* ]] && command -v fc-cache &>/dev/null; then
+      fc-cache -f "$fonts_dir" &>/dev/null
+    fi
+    print_success "Removed $fonts_removed MesloLGS NF font files"
+  else
+    print_info "No MesloLGS NF fonts found, skipping"
+  fi
+}
+
 remove_oh_my_zsh() {
   print_section "Removing Oh My Zsh"
 
@@ -329,6 +367,7 @@ print_summary() {
   echo "  • Oh My Zsh"
   echo "  • Custom plugins"
   echo "  • Powerlevel10k theme and config"
+  echo "  • MesloLGS NF fonts"
   echo "  • AnmolNoor's custom commands"
   echo ""
   echo -e "${YELLOW}Next Steps:${NC}"
@@ -364,6 +403,9 @@ main() {
 
   # Remove Powerlevel10k
   remove_powerlevel10k
+
+  # Remove fonts
+  remove_fonts
 
   # Remove Oh My Zsh
   remove_oh_my_zsh

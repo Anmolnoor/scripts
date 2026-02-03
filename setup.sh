@@ -331,13 +331,75 @@ install_powerlevel10k() {
 }
 
 # ─────────────────────────────────────────────────────────────
+# Powerlevel10k Fonts Installation
+# ─────────────────────────────────────────────────────────────
+
+install_fonts() {
+  print_section "Installing Powerlevel10k Fonts"
+
+  local fonts_src="$HOME/.scripts/powerlevel10k/fonts"
+  local fonts_dst=""
+
+  # Determine fonts directory based on OS
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    fonts_dst="$HOME/Library/Fonts"
+  else
+    fonts_dst="$HOME/.local/share/fonts"
+    mkdir -p "$fonts_dst"
+  fi
+
+  # Check if fonts are already installed
+  local font_name="MesloLGS NF Regular.ttf"
+  if [[ -f "$fonts_dst/$font_name" ]]; then
+    print_skip "MesloLGS NF fonts"
+    SKIPPED+=("MesloLGS NF fonts")
+    return 0
+  fi
+
+  # Check if source fonts exist
+  if [[ ! -d "$fonts_src" ]] || [[ -z "$(ls -A "$fonts_src" 2>/dev/null)" ]]; then
+    print_warning "Font files not found in scripts repository"
+    print_info "You may need to install fonts manually from:"
+    echo "  https://github.com/romkatv/powerlevel10k#fonts"
+    return 0
+  fi
+
+  print_info "Installing MesloLGS NF fonts..."
+
+  # Copy fonts
+  local fonts_installed=0
+  for font in "$fonts_src"/*.ttf; do
+    if [[ -f "$font" ]]; then
+      cp "$font" "$fonts_dst/"
+      ((fonts_installed++))
+    fi
+  done
+
+  if [[ $fonts_installed -gt 0 ]]; then
+    # Refresh font cache on Linux
+    if [[ "$OSTYPE" != "darwin"* ]] && command_exists fc-cache; then
+      fc-cache -f "$fonts_dst" &>/dev/null
+    fi
+
+    print_success "Installed $fonts_installed MesloLGS NF font files"
+    INSTALLED+=("MesloLGS NF fonts ($fonts_installed files)")
+
+    echo ""
+    print_warning "Important: Configure your terminal to use 'MesloLGS NF' font"
+    print_info "Terminal settings → Font → MesloLGS NF Regular"
+  else
+    print_warning "No font files found to install"
+  fi
+}
+
+# ─────────────────────────────────────────────────────────────
 # Powerlevel10k Configuration (AnmolNoor's preset)
 # ─────────────────────────────────────────────────────────────
 
 configure_powerlevel10k() {
   print_section "Powerlevel10k Configuration"
 
-  local scripts_config="$HOME/.scripts/p10k.zsh"
+  local scripts_config="$HOME/.scripts/powerlevel10k/p10k.zsh"
   local target_config="$HOME/.p10k.zsh"
 
   if [[ ! -f "$scripts_config" ]]; then
@@ -533,6 +595,19 @@ verify_installation() {
     print_warning "Powerlevel10k config not found (run 'p10k configure')"
   fi
 
+  # Check fonts
+  local fonts_dir=""
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    fonts_dir="$HOME/Library/Fonts"
+  else
+    fonts_dir="$HOME/.local/share/fonts"
+  fi
+  if [[ -f "$fonts_dir/MesloLGS NF Regular.ttf" ]]; then
+    print_success "MesloLGS NF fonts installed"
+  else
+    print_warning "MesloLGS NF fonts not installed (recommended for best experience)"
+  fi
+
   # Check scripts repo
   if [[ -d "$HOME/.scripts/.git" ]]; then
     print_success "Scripts repository"
@@ -609,6 +684,7 @@ print_summary() {
     echo "  • Plugins: git, zsh-autosuggestions, zsh-syntax-highlighting,"
     echo "             fast-syntax-highlighting, zsh-autocomplete, zsh-z"
     echo "  • Theme: Powerlevel10k (with AnmolNoor's preset config)"
+    echo "  • Fonts: MesloLGS NF (required for Powerlevel10k icons)"
     echo "  • Scripts: ~/.scripts (from github.com/Anmolnoor/scripts)"
     echo ""
   fi
@@ -632,13 +708,15 @@ print_summary() {
   fi
 
   echo -e "${YELLOW}Next Steps:${NC}"
-  echo "  1. Restart your terminal or run: source ~/.zshrc"
-  echo "  2. Run 'p10k configure' to customize your prompt (if needed)"
+  echo "  1. Configure your terminal font to 'MesloLGS NF'"
+  echo "     (Terminal → Preferences → Font → MesloLGS NF Regular)"
+  echo "  2. Restart your terminal or run: source ~/.zshrc"
+  echo "  3. Run 'p10k configure' to customize your prompt (if needed)"
   if [[ "$INSTALL_UTILITY_COMMANDS" == "true" ]]; then
-    echo "  3. Run 'chelp' to see utility commands"
+    echo "  4. Run 'chelp' to see utility commands"
   fi
   if [[ "$INSTALL_GIT_SHORTCUTS" == "true" ]]; then
-    echo "  4. Run 'ghelp' to see git shortcuts"
+    echo "  5. Run 'ghelp' to see git shortcuts"
   fi
   echo ""
 }
@@ -676,16 +754,19 @@ main() {
   # STEP 4: Install Powerlevel10k
   install_powerlevel10k
 
-  # STEP 5: Configure Powerlevel10k with preset
+  # STEP 5: Install Powerlevel10k fonts
+  install_fonts
+
+  # STEP 6: Configure Powerlevel10k with preset
   configure_powerlevel10k
 
-  # STEP 6: Ask about utility commands
+  # STEP 7: Ask about utility commands
   ask_utility_commands
 
-  # STEP 7: Ask about git shortcuts
+  # STEP 8: Ask about git shortcuts
   ask_git_shortcuts
 
-  # STEP 8: Configure .zshrc
+  # STEP 9: Configure .zshrc
   configure_zshrc
 
   # Verify installation

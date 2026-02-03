@@ -23,8 +23,11 @@ The setup will guide you step by step:
 1. Install Oh My Zsh
 2. Install plugins (autosuggestions, syntax-highlighting, etc.)
 3. Install Powerlevel10k theme with preset config
-4. Ask if you want utility commands
-5. Ask if you want git shortcuts
+4. Install MesloLGS NF fonts (required for Powerlevel10k icons)
+5. Ask if you want utility commands
+6. Ask if you want git shortcuts
+
+> **Important:** After installation, configure your terminal to use the **MesloLGS NF** font for proper icon display.
 
 ---
 
@@ -131,7 +134,9 @@ Installed automatically by the setup script:
 | `git-shortcuts.zsh` | Git shortcut commands |
 | `help.zsh` | Help command for git shortcuts |
 | `completions.zsh` | Zsh auto-completions |
-| `p10k.zsh` | Powerlevel10k theme preset |
+| `powerlevel10k/` | Powerlevel10k theme files directory |
+| `powerlevel10k/p10k.zsh` | Powerlevel10k theme preset config |
+| `powerlevel10k/fonts/` | MesloLGS NF font files |
 
 ---
 
