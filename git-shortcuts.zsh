@@ -59,6 +59,21 @@ gcb() {
   return $ret
 }
 
+# gco - checkout branch or file
+alias gco="git checkout"
+
+# gl - pretty git log
+alias gl="git log --oneline --graph --decorate --all"
+
+# gd - git diff
+alias gd="git diff"
+
+# gb - git branch
+alias gb="git branch"
+
+# gaa - git add all
+alias gaa="git add ."
+
 # uncommit - undo last commit but KEEP your changes (staged)
 alias uncommit="git reset --soft HEAD~1"
 

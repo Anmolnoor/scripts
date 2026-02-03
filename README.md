@@ -11,6 +11,11 @@ Custom shell shortcuts to make life easier.
 | `gs` | Show git status |
 | `gsw` | Switch branch |
 | `gcb "name"` | Create and switch to new branch |
+| `gco` | Checkout branch or file |
+| `gb` | List branches |
+| `gl` | Visual git log |
+| `gd` | Show git diff |
+| `gaa` | Stage all changes (git add .) |
 | `commit "msg"` | Stage all + commit with message |
 | `push` | Push current branch to origin |
 | `pull` | Pull current branch from origin |
