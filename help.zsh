@@ -10,6 +10,8 @@ ghelp() {
   echo "│               📦 Git Shortcuts                       │"
   echo "├──────────────────────────────────────────────────────┤"
   echo "│  gs              Show git status                     │"
+  echo "│  gsw             Switch branch                       │"
+  echo "│  gcb \"name\"      Create and switch to new branch     │"
   echo "│  commit \"msg\"    Stage all + commit with message     │"
   echo "│  push            Push current branch to origin       │"
   echo "│  pull            Pull current branch from origin     │"

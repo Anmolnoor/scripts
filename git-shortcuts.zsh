@@ -30,8 +30,34 @@ stop_spinner() {
 
 # ─────────────────────────────────────────────────────────────
 
+
 # gs - git status shortcut
 alias gs="git status"
+
+# gsw - switch branch
+alias gsw="git switch"
+
+# gcb - create and switch to new branch
+unalias gcb 2>/dev/null
+gcb() {
+  if [ -z "$1" ]; then
+    echo "Usage: gcb \"branch-name\""
+    return 1
+  fi
+  local branch="$1"
+  local output
+  output=$(git checkout -b "$branch" 2>&1)
+  local ret=$?
+  if [[ $ret -eq 0 ]]; then
+    echo "✅ Created and switched to branch: $branch"
+  else
+    echo "❌ Failed to create branch"
+    echo ""
+    echo "$output"
+    echo ""
+  fi
+  return $ret
+}
 
 # uncommit - undo last commit but KEEP your changes (staged)
 alias uncommit="git reset --soft HEAD~1"
