@@ -31,6 +31,7 @@ ghelp() {
   echo "│  cwsp            Commit with AI summary + push       │"
   echo "├──────────────────────────────────────────────────────┤"
   echo "│  ghelp           Show this help                      │"
+  echo "│  chelp           Show utility commands (reload etc) │"
   echo "└──────────────────────────────────────────────────────┘"
   echo ""
 }
