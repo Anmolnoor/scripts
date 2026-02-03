@@ -79,6 +79,7 @@ ghelp
 |------|---------|
 | `git-shortcuts.zsh` | Git-related shortcuts |
 | `help.zsh` | Help command to list all shortcuts |
+| `completions.zsh` | Zsh auto-completion definitions |
 | `.gitignore` | Template gitignore |
 
 ---
@@ -90,6 +91,7 @@ All scripts are loaded via `~/.zshrc`:
 ```bash
 source ~/.scripts/git-shortcuts.zsh
 source ~/.scripts/help.zsh
+source ~/.scripts/completions.zsh
 ```
 
 After editing any script, reload with:

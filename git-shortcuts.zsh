@@ -297,3 +297,8 @@ cwsp() {
   fi
   return $ret
 }
+
+# Auto-load completions
+if [ -f ~/.scripts/completions.zsh ]; then
+  source ~/.scripts/completions.zsh
+fi
