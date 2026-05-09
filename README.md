@@ -29,6 +29,16 @@ The setup will guide you step by step:
 
 > **Important:** After installation, configure your terminal to use the **MesloLGS NF** font for proper icon display.
 
+### On a bash system?
+
+Run this instead — it installs zsh, sets it as your default shell, then runs `setup.sh`:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Anmolnoor/scripts/main/setup_on_bash.sh)"
+```
+
+After it finishes, log out and back in (or run `exec zsh`) so your shell switches over.
+
 ---
 
 ## Update
@@ -128,7 +138,8 @@ Installed automatically by the setup script:
 
 | File | Description |
 |------|-------------|
-| `setup.sh` | Main setup script |
+| `setup.sh` | Main setup script (zsh) |
+| `setup_on_bash.sh` | Bootstrap for bash users — installs zsh, then runs `setup.sh` |
 | `uninstall.sh` | Complete uninstaller |
 | `commands.zsh` | Utility commands (reload, update, etc.) |
 | `git-shortcuts.zsh` | Git shortcut commands |
