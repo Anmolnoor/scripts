@@ -75,7 +75,7 @@ The uninstaller will:
 - Ask for feedback (help us improve!)
 - Show what will be removed
 - Clean your .zshrc (backup created)
-- Remove Oh My Zsh, plugins, theme, and scripts
+- Remove Oh My Zsh, plugins, Powerlevel10k theme + config, MesloLGS NF fonts, and the scripts directory
 
 ---
 
