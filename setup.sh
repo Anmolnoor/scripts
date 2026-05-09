@@ -371,7 +371,7 @@ install_fonts() {
   for font in "$fonts_src"/*.ttf; do
     if [[ -f "$font" ]]; then
       cp "$font" "$fonts_dst/"
-      ((fonts_installed++))
+      fonts_installed=$((fonts_installed + 1))
     fi
   done
 

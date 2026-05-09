@@ -224,7 +224,25 @@ run_zsh_setup() {
   # zsh-only check passes even though we're still running under bash.
   print_info "Handing off to setup.sh (SHELL overridden to $zsh_path)"
   echo ""
+
+  # Disable set -e around the child invocation so we can capture its exit
+  # code and surface a clear error instead of silently aborting.
+  set +e
   SHELL="$zsh_path" bash "$setup_script"
+  local rc=$?
+  set -e
+
+  if [[ $rc -ne 0 ]]; then
+    echo ""
+    print_error "setup.sh exited with code $rc — installation is incomplete."
+    print_info "Inspect the output above for the failure point. Common causes:"
+    echo "    • Network failure during a git clone or curl"
+    echo "    • Missing system dependency"
+    echo "    • Interrupted prompt"
+    print_info "Once resolved, re-run:"
+    echo "    SHELL=$zsh_path bash ~/.scripts/setup.sh"
+    exit "$rc"
+  fi
 }
 
 # ─────────────────────────────────────────────────────────────

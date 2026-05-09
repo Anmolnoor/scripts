@@ -302,7 +302,7 @@ remove_fonts() {
   for font in "$fonts_dir"/MesloLGS\ NF*.ttf; do
     if [[ -f "$font" ]]; then
       rm -f "$font"
-      ((fonts_removed++))
+      fonts_removed=$((fonts_removed + 1))
     fi
   done
 
