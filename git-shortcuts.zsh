@@ -144,7 +144,8 @@ drop() {
     echo "Cancelled."
     return 0
   fi
-  git reset --hard -q && git clean -fdq :/ && echo "✅ Discarded all uncommitted changes"
+  # clean first: reset could revert an uncommitted .gitignore rule that protects a file
+  git clean -fdq :/ && git reset --hard -q && echo "✅ Discarded all uncommitted changes"
 }
 
 # cnb - create new branch and switch to it
@@ -192,9 +193,10 @@ $staged
 DIFF:
 $(git diff --cached | head -150)"
 
-  # --tools "": answer from the prompt alone, no file reads or commands
+  # Answer from the prompt alone: no tools, no repo CLAUDE.md/hooks (--safe-mode),
+  # no stdin (it would swallow piped answers to the confirm prompt), stdout only
   local result
-  result=$(claude -p --model haiku --tools "" --no-session-persistence "$prompt" 2>&1)
+  result=$(claude -p --safe-mode --model haiku --tools "" --no-session-persistence "$prompt" </dev/null)
   local ret=$?
 
   stop_spinner
