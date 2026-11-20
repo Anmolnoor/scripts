@@ -119,7 +119,7 @@ Installed automatically by the setup script:
 | `commit "msg"` | Stage all + commit with message |
 | `push` | Push current branch to origin |
 | `pull` | Pull current branch from origin |
-| `drop` | Discard all uncommitted changes |
+| `drop` | Discard all uncommitted changes, untracked files too (asks first) |
 | `uncommit` | Undo last commit, keep changes |
 | `dropcommit` | Undo last commit, discard changes |
 
@@ -127,10 +127,12 @@ Installed automatically by the setup script:
 
 | Command | Description |
 |---------|-------------|
-| `sum` | Generate AI commit summary |
-| `cws` | Commit with AI summary (asks for confirmation) |
-| `cwsp` | Commit with AI summary + push |
+| `sum` | Generate AI commit summary of staged changes |
+| `cws` | Commit staged changes with AI summary (asks for confirmation) |
+| `cwsp` | Commit staged changes with AI summary + push |
 | `ghelp` | Show all git shortcuts |
+
+The AI commands use the [Claude Code](https://claude.com/claude-code) CLI (`claude`), so install it and log in first. They commit only what you staged: stage with `gaa` or `git add <file>`.
 
 ---
 

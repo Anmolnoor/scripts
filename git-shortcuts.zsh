@@ -135,9 +135,16 @@ pull() {
   return $ret
 }
 
-# drop - stash and drop all changes (discard all uncommitted changes)
+# drop - discard all uncommitted changes, untracked files included (asks first)
+# (not `git stash && git stash drop`: on a clean tree that deletes your last stash)
 drop() {
-  git stash && git stash drop
+  echo -n "Discard ALL uncommitted changes, untracked files included? [y/N]: "
+  read -r confirm
+  if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+    echo "Cancelled."
+    return 0
+  fi
+  git reset --hard -q && git clean -fdq :/ && echo "✅ Discarded all uncommitted changes"
 }
 
 # cnb - create new branch and switch to it
@@ -161,33 +168,44 @@ cnb() {
   return $ret
 }
 
-# sum - get AI-generated one-line commit summary using cursor agent
+# sum - AI one-line commit summary of the STAGED changes (needs Claude Code CLI)
 sum() {
-  local status_output=$(git status --porcelain 2>/dev/null)
-  local diff_output=$(git diff 2>/dev/null)
-  
-  if [ -z "$status_output" ]; then
-    echo "No changes to summarize"
+  if ! command -v claude &>/dev/null; then
+    echo "sum needs the Claude Code CLI (claude) on your PATH" >&2
     return 1
   fi
-  
+
+  local staged=$(git diff --cached --name-status 2>/dev/null)
+  if [ -z "$staged" ]; then
+    echo "Nothing staged. Stage files first (gaa stages everything)." >&2
+    return 1
+  fi
+
   start_spinner "Generating commit summary"
-  
+
   # Build prompt with all context inline
   local prompt="You are in project: $(basename $(pwd)). Generate a concise one-line git commit message (max 72 chars) for ONLY these changes. Return ONLY the commit message text, nothing else. No quotes, no explanation, no markdown.
 
-STATUS:
-$status_output
+FILES:
+$staged
 
 DIFF:
-$(echo "$diff_output" | head -150)"
-  
-  # Use cursor agent with fresh workspace context
+$(git diff --cached | head -150)"
+
+  # --tools "": answer from the prompt alone, no file reads or commands
   local result
-  result=$(cursor agent --print --mode ask --workspace "$(pwd)" "$prompt" 2>/dev/null | tail -1)
-  
+  result=$(claude -p --model haiku --tools "" --no-session-persistence "$prompt" 2>&1)
+  local ret=$?
+
   stop_spinner
-  
+
+  if [[ $ret -ne 0 ]] || [[ -z "$result" ]]; then
+    echo "❌ Claude could not generate a summary" >&2
+    echo "$result" >&2
+    return 1
+  fi
+  result=$(echo "$result" | tail -1)
+
   # Clean up the result (remove quotes if present)
   result="${result//\"/}"
   result="${result//\'/}"
@@ -224,7 +242,7 @@ cws() {
   
   start_spinner "Committing"
   local output
-  output=$(git add . && git commit -m "$summary" 2>&1)
+  output=$(git commit -m "$summary" 2>&1)
   local ret=$?
   stop_spinner
   
@@ -267,7 +285,7 @@ cwsp() {
   
   start_spinner "Committing"
   local output
-  output=$(git add . && git commit -m "$summary" 2>&1)
+  output=$(git commit -m "$summary" 2>&1)
   local ret=$?
   stop_spinner
   
